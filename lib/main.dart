@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:english_words/english_words.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final wordpair = WordPair.random();
     return MaterialApp(
         theme: ThemeData(primaryColor: Colors.purple[900]),
-        home: Randomwords()
-    );
+        home: Randomwords());
   }
 }
 
@@ -20,14 +19,31 @@ class Randomwords extends StatefulWidget {
 }
 
 class RandomWordsState extends State<Randomwords> {
-  Widget build(BuildContext context){
+  final _randomWordPairs = <WordPair>[];
+
+  Widget _buildList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemBuilder: (context, item) {
+        if (item.isOdd) return Divider();
+
+        final index = item ~/ 2;
+        if (index >= _randomWordPairs.length) {
+          _randomWordPairs.addAll(generateWordPairs().take(10));
+        }
+        return _buildRow(_randomWordPairs[index]);
+      },
+    );
+  }
+  
+  Widget _buildRow(WordPair pair){
+    return ListTile(title: Text(pair.asPascalCase, style: TextStyle(fontSize: 18.0),));
+  }
+  Widget build(BuildContext context) {
     return Scaffold(
-          appBar: AppBar(
-            title: Text("WordPair - Generator"),
-             ),
-            body: Center(
-              child: Text('hello world'),
-              )
-        );
+        appBar: AppBar(
+          title: Text("WordPair - Generator"),
+        ),
+        body: _buildList());
   }
 }
